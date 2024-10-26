@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Yes or No</title>
+    <style>
+        body {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-size: 10rem;
+            background-color: #f0f0f0;
+            color: #333;
+        }
+    </style>
+</head>
+<body>
+    <div id="response">Loading...</div>
+
+    <script>
+        const sheetId = '1xG71BRhNWiJF_8wiSFGcOXJx2hxlzdIDxoMj88knql0'; // Your sheet ID
+        const apiKey = 'AIzaSyAtM8_HAzZTFSfwE0KRVT5UZ93Sa-M-SZc'; // Your API key
+        
+        fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A1?key=${apiKey}`)
+            .then(response => {
+                console.log('Response:', response); // Log the response object
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then(data => {
+                console.log('Data:', data); // Log the returned data
+                if (data.values && data.values.length > 0) {
+                    const responseValue = data.values[0][0]; // Assuming the value is in the first cell
+                    document.getElementById('response').innerText = responseValue;
+                } else {
+                    document.getElementById('response').innerText = "No data found";
+                }
+            })
+            .catch(error => {
+                document.getElementById('response').innerText = "Error: " + error.message;
+                console.error('Error fetching the response:', error);
+            });
+    </script>
+</body>
+</html>
