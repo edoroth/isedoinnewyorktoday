@@ -3,48 +3,113 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Yes or No</title>
+    <title>Near NYC?</title>
     <style>
         body {
             display: flex;
+            flex-direction: column;
             justify-content: center;
             align-items: center;
             height: 100vh;
             margin: 0;
-            font-size: 10rem;
+            font-family: Arial, sans-serif;
             background-color: #f0f0f0;
             color: #333;
+        }
+        #response {
+            font-size: 10rem;
+            margin-bottom: 20px;
+        }
+        #status {
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+        #details {
+            font-size: 0.9rem;
+            color: #666;
+            text-align: center;
+            max-width: 80%;
+        }
+        #lastUpdate {
+            font-size: 0.8rem;
+            margin-top: 30px;
+            color: #999;
         }
     </style>
 </head>
 <body>
-    <div id="response">Loading...</div>
+    <div id="status">Loading...</div>
+    <div id="response">...</div>
+    <div id="details"></div>
+    <div id="lastUpdate"></div>
 
+    <!-- Firebase SDK -->
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
+    
     <script>
-        const sheetId = '1xG71BRhNWiJF_8wiSFGcOXJx2hxlzdIDxoMj88knql0'; // Your sheet ID
-        const apiKey = 'AIzaSyAtM8_HAzZTFSfwE0KRVT5UZ93Sa-M-SZc'; // Your API key
+        // REPLACE THIS ENTIRE OBJECT with your Firebase configuration
+        const firebaseConfig = {
+          apiKey: "AIzaSyDlRnTNyQfR6axcHtsV84WK89KosvU0jPk",
+          authDomain: "isedoinnewyorktoday.firebaseapp.com",
+          databaseURL: "https://isedoinnewyorktoday-default-rtdb.firebaseio.com",
+          projectId: "isedoinnewyorktoday",
+          storageBucket: "isedoinnewyorktoday.firebasestorage.app",
+          messagingSenderId: "824920100333",
+          appId: "1:824920100333:web:cda3ada6879518db05abe4",
+          measurementId: "G-X4RQLXL2JL"
+        };
         
-        fetch(`https://sheets.googleapis.com/v4/spreadsheets/${sheetId}/values/Sheet1!A1?key=${apiKey}`)
-            .then(response => {
-                console.log('Response:', response); // Log the response object
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
-            .then(data => {
-                console.log('Data:', data); // Log the returned data
-                if (data.values && data.values.length > 0) {
-                    const responseValue = data.values[0][0]; // Assuming the value is in the first cell
-                    document.getElementById('response').innerText = responseValue;
+        // Initialize Firebase
+        firebase.initializeApp(firebaseConfig);
+        const database = firebase.database();
+        
+        const statusDiv = document.getElementById('status');
+        const responseDiv = document.getElementById('response');
+        const detailsDiv = document.getElementById('details');
+        const lastUpdateDiv = document.getElementById('lastUpdate');
+        
+        // Listen for location updates
+        database.ref('myLocation').on('value', (snapshot) => {
+            const data = snapshot.val();
+            
+            if (data) {
+                // Update the UI
+                const isNearNYC = data.isNearNYC;
+                const distance = data.distanceFromNYC;
+                const timestamp = new Date(data.timestamp);
+                const timeDiff = Math.floor((new Date() - timestamp) / 1000 / 60); // Minutes
+                
+                // Update status elements
+                statusDiv.innerText = 'Location data loaded';
+                responseDiv.innerText = isNearNYC ? 'YES' : 'NO';
+                responseDiv.style.color = isNearNYC ? '#4CAF50' : '#F44336';
+                
+                // Update details
+                detailsDiv.innerText = `Distance from NYC: ${distance.toFixed(1)} miles`;
+                
+                // Update timestamp
+                const timeString = timestamp.toLocaleString();
+                lastUpdateDiv.innerText = `Last updated: ${timeString} (${timeDiff} minutes ago)`;
+                
+                // Highlight if data is stale
+                if (timeDiff > 30) {
+                    lastUpdateDiv.style.color = '#f44336';
                 } else {
-                    document.getElementById('response').innerText = "No data found";
+                    lastUpdateDiv.style.color = '#999';
                 }
-            })
-            .catch(error => {
-                document.getElementById('response').innerText = "Error: " + error.message;
-                console.error('Error fetching the response:', error);
-            });
+            } else {
+                statusDiv.innerText = 'No location data available';
+                responseDiv.innerText = '?';
+                detailsDiv.innerText = 'Waiting for location data...';
+                lastUpdateDiv.innerText = '';
+            }
+        }, (error) => {
+            statusDiv.innerText = 'Error';
+            responseDiv.innerText = 'ERROR';
+            responseDiv.style.color = '#F44336';
+            detailsDiv.innerText = 'Could not load location data: ' + error.message;
+        });
     </script>
 </body>
 </html>
