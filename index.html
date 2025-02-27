@@ -19,6 +19,7 @@
         #response {
             font-size: 10rem;
             margin-bottom: 20px;
+            cursor: pointer; /* Add this to indicate it's clickable */
         }
         #status {
             font-size: 1rem;
@@ -103,25 +104,37 @@
     </style>
 </head>
 <body>
-    <!-- Add this right after your opening <body> tag -->
+    <!-- Hidden easter egg spot -->
     <div id="easter-egg"></div>
+    
+    <!-- Main content -->
     <div id="status">Loading...</div>
     <div id="response">...</div>
     <div id="details"></div>
     <div id="lastUpdate"></div>
+    
+    <!-- Easter egg modal -->
+    <div class="egg-modal" id="egg-modal">
+        <div class="close-button" id="close-modal">×</div>
+        <div class="egg-content">
+            <h2>You found the Easter Egg!</h2>
+            <p>Congratulations on discovering this hidden feature! Enjoy one of Edo's rotating faves:</p>
+            <a href="https://www.youtube.com/watch?v=cQDaWPwfgm8" target="_blank" class="egg-button">Watch Video</a>
+        </div>
+    </div>
 
     <!-- Firebase SDK -->
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-app.js"></script>
     <script src="https://www.gstatic.com/firebasejs/8.10.1/firebase-database.js"></script>
     
     <script>
-        // REPLACE THIS ENTIRE OBJECT with your Firebase configuration
+        // Firebase configuration
         const firebaseConfig = {
           apiKey: "AIzaSyDlRnTNyQfR6axcHtsV84WK89KosvU0jPk",
           authDomain: "isedoinnewyorktoday.firebaseapp.com",
           databaseURL: "https://isedoinnewyorktoday-default-rtdb.firebaseio.com",
           projectId: "isedoinnewyorktoday",
-          storageBucket: "isedoinnewyorktoday.firebasestorage.app",
+          storageBucket: "isedoinnewyorktoday.firebaseapp.com",
           messagingSenderId: "824920100333",
           appId: "1:824920100333:web:cda3ada6879518db05abe4",
           measurementId: "G-X4RQLXL2JL"
@@ -131,10 +144,45 @@
         firebase.initializeApp(firebaseConfig);
         const database = firebase.database();
         
+        // Get DOM elements
         const statusDiv = document.getElementById('status');
         const responseDiv = document.getElementById('response');
         const detailsDiv = document.getElementById('details');
         const lastUpdateDiv = document.getElementById('lastUpdate');
+        const easterEggSpot = document.getElementById('easter-egg');
+        const eggModal = document.getElementById('egg-modal');
+        const closeModal = document.getElementById('close-modal');
+        
+        // Easter Egg Code
+        let clickCount = 0;
+        
+        // Easter Egg Activation - Method 1: Click the hidden spot
+        easterEggSpot.addEventListener('click', () => {
+            console.log("Easter egg spot clicked"); // For debugging
+            eggModal.classList.add('active');
+        });
+        
+        // Easter Egg Activation - Method 2: Click the response text 5 times
+        responseDiv.addEventListener('click', () => {
+            clickCount++;
+            console.log("Response clicked, count:", clickCount); // For debugging
+            if (clickCount >= 5) {
+                eggModal.classList.add('active');
+                clickCount = 0;
+            }
+        });
+        
+        // Close the Easter egg modal
+        closeModal.addEventListener('click', () => {
+            eggModal.classList.remove('active');
+        });
+        
+        // Close when clicking outside the content
+        eggModal.addEventListener('click', (e) => {
+            if (e.target === eggModal) {
+                eggModal.classList.remove('active');
+            }
+        });
         
         // Listen for location updates
         database.ref('myLocation').on('value', (snapshot) => {
@@ -176,51 +224,7 @@
             responseDiv.innerText = 'ERROR';
             responseDiv.style.color = '#F44336';
             detailsDiv.innerText = 'Could not load location data: ' + error.message;
-        });        
+        });
     </script>
-    <!-- Add this JavaScript code near your other scripts -->
-    <script>
-    // Easter Egg Code
-    const easterEggSpot = document.getElementById('easter-egg');
-    const eggModal = document.getElementById('egg-modal');
-    const closeModal = document.getElementById('close-modal');
-    const responseDiv = document.getElementById('response');
-    
-    // Easter Egg Activation - Method 1: Click the hidden spot
-    easterEggSpot.addEventListener('click', () => {
-        eggModal.classList.add('active');
-    });
-    
-    // Easter Egg Activation - Method 2: Click the response text 5 times
-    let clickCount = 0;
-    responseDiv.addEventListener('click', () => {
-        clickCount++;
-        if (clickCount >= 5) {
-            eggModal.classList.add('active');
-            clickCount = 0;
-        }
-    });
-    
-    // Close the Easter egg modal
-    closeModal.addEventListener('click', () => {
-        eggModal.classList.remove('active');
-    });
-    
-    // Also close when clicking outside the content
-    eggModal.addEventListener('click', (e) => {
-        if (e.target === eggModal) {
-            eggModal.classList.remove('active');
-        }
-    });
-    </script>
-    <!-- Add this right before the closing </body> tag -->
-<div class="egg-modal" id="egg-modal">
-    <div class="close-button" id="close-modal">×</div>
-    <div class="egg-content">
-        <h2>You found the Easter Egg!</h2>
-        <p>Congratulations on discovering this hidden feature! Enjoy one of Edo's rotating faves:</p>
-        <a href="https://www.youtube.com/watch?v=cQDaWPwfgm8" target="_blank" class="egg-button">Watch Video</a>
-    </div>
-</div>
 </body>
 </html>
