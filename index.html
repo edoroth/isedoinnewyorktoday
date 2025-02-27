@@ -101,6 +101,11 @@
             right: 25px;
             cursor: pointer;
         }
+        #video-title {
+            font-style: italic;
+            margin-bottom: 20px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -119,7 +124,8 @@
         <div class="egg-content">
             <h2>You found the Easter Egg!</h2>
             <p>Congratulations on discovering this hidden feature! Enjoy one of Edo's rotating faves:</p>
-            <a href="https://www.youtube.com/watch?v=cQDaWPwfgm8" target="_blank" class="egg-button">Watch Video</a>
+            <div id="video-title"></div>
+            <a href="#" target="_blank" class="egg-button" id="video-link">Watch Video</a>
         </div>
     </div>
 
@@ -152,6 +158,35 @@
         const easterEggSpot = document.getElementById('easter-egg');
         const eggModal = document.getElementById('egg-modal');
         const closeModal = document.getElementById('close-modal');
+        const videoLink = document.getElementById('video-link');
+        const videoTitle = document.getElementById('video-title');
+        
+        // List of Edo's favorite videos
+        const favoriteVideos = [
+            { 
+                url: "https://www.youtube.com/watch?v=cQDaWPwfgm8",
+                title: "John Early - Overprotected (Britney Spears Cover) [Official Music Video]"
+            },
+            { 
+                url: "https://www.youtube.com/watch?v=XTg3PJWh5nU&",
+                title: "Paris with Kate Berlant and John Early"
+            },
+            { 
+                url: "https://www.youtube.com/watch?v=RWzkei2Co3U",
+                title: "Azealia Banks / I do music for gay people"
+            },
+            // Add more videos as desired
+        ];
+        
+        // Function to select a random video
+        function selectRandomVideo() {
+            const randomIndex = Math.floor(Math.random() * favoriteVideos.length);
+            const selectedVideo = favoriteVideos[randomIndex];
+            
+            // Update the link and title
+            videoLink.href = selectedVideo.url;
+            videoTitle.textContent = selectedVideo.title;
+        }
         
         // Easter Egg Code
         let clickCount = 0;
@@ -159,6 +194,7 @@
         // Easter Egg Activation - Method 1: Click the hidden spot
         easterEggSpot.addEventListener('click', () => {
             console.log("Easter egg spot clicked"); // For debugging
+            selectRandomVideo();
             eggModal.classList.add('active');
         });
         
@@ -167,6 +203,7 @@
             clickCount++;
             console.log("Response clicked, count:", clickCount); // For debugging
             if (clickCount >= 5) {
+                selectRandomVideo();
                 eggModal.classList.add('active');
                 clickCount = 0;
             }
