@@ -176,41 +176,42 @@
             responseDiv.innerText = 'ERROR';
             responseDiv.style.color = '#F44336';
             detailsDiv.innerText = 'Could not load location data: ' + error.message;
-        });
-
-        // Easter Egg Code
-        const easterEggSpot = document.getElementById('easter-egg');
-        const eggModal = document.getElementById('egg-modal');
-        const closeModal = document.getElementById('close-modal');
-        const responseDiv = document.getElementById('response');
-        
-        // Easter Egg Activation - Method 1: Click the hidden spot
-        easterEggSpot.addEventListener('click', () => {
+        });        
+    </script>
+    <!-- Add this JavaScript code near your other scripts -->
+    <script>
+    // Easter Egg Code
+    const easterEggSpot = document.getElementById('easter-egg');
+    const eggModal = document.getElementById('egg-modal');
+    const closeModal = document.getElementById('close-modal');
+    const responseDiv = document.getElementById('response');
+    
+    // Easter Egg Activation - Method 1: Click the hidden spot
+    easterEggSpot.addEventListener('click', () => {
+        eggModal.classList.add('active');
+    });
+    
+    // Easter Egg Activation - Method 2: Click the response text 5 times
+    let clickCount = 0;
+    responseDiv.addEventListener('click', () => {
+        clickCount++;
+        if (clickCount >= 5) {
             eggModal.classList.add('active');
-        });
-        
-        // Easter Egg Activation - Method 2: Click the response text 5 times
-        let clickCount = 0;
-        responseDiv.addEventListener('click', () => {
-            clickCount++;
-            if (clickCount >= 5) {
-                eggModal.classList.add('active');
-                clickCount = 0;
-            }
-        });
-        
-        // Close the Easter egg modal
-        closeModal.addEventListener('click', () => {
+            clickCount = 0;
+        }
+    });
+    
+    // Close the Easter egg modal
+    closeModal.addEventListener('click', () => {
+        eggModal.classList.remove('active');
+    });
+    
+    // Also close when clicking outside the content
+    eggModal.addEventListener('click', (e) => {
+        if (e.target === eggModal) {
             eggModal.classList.remove('active');
-        });
-        
-        // Also close when clicking outside the content
-        eggModal.addEventListener('click', (e) => {
-            if (e.target === eggModal) {
-                eggModal.classList.remove('active');
-            }
-        });
-        
+        }
+    });
     </script>
     <!-- Add this right before the closing </body> tag -->
 <div class="egg-modal" id="egg-modal">
