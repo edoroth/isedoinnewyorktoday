@@ -35,9 +35,76 @@
             margin-top: 30px;
             color: #999;
         }
+        /* Easter Egg Styles */
+        #easter-egg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 20px;
+            height: 20px;
+            background-color: transparent;
+            cursor: pointer;
+            z-index: 1000;
+        }
+        .egg-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0,0,0,0.8);
+            justify-content: center;
+            align-items: center;
+            z-index: 2000;
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            flex-direction: column;
+        }
+        .egg-modal.active {
+            display: flex;
+            opacity: 1;
+        }
+        .egg-content {
+            background-color: white;
+            padding: 20px;
+            border-radius: 10px;
+            text-align: center;
+            max-width: 600px;
+            width: 90%;
+        }
+        .egg-content h2 {
+            color: #4285f4;
+        }
+        .egg-content p {
+            margin-bottom: 20px;
+        }
+        .egg-button {
+            display: inline-block;
+            background-color: #4285f4;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 5px;
+            text-decoration: none;
+            margin: 10px;
+            transition: background-color 0.2s ease;
+        }
+        .egg-button:hover {
+            background-color: #3367d6;
+        }
+        .close-button {
+            color: white;
+            font-size: 1.5rem;
+            position: absolute;
+            top: 15px;
+            right: 25px;
+            cursor: pointer;
+        }
     </style>
 </head>
 <body>
+    <!-- Add this right after your opening <body> tag -->
+    <div id="easter-egg"></div>
     <div id="status">Loading...</div>
     <div id="response">...</div>
     <div id="details"></div>
@@ -110,6 +177,49 @@
             responseDiv.style.color = '#F44336';
             detailsDiv.innerText = 'Could not load location data: ' + error.message;
         });
+
+        // Easter Egg Code
+        const easterEggSpot = document.getElementById('easter-egg');
+        const eggModal = document.getElementById('egg-modal');
+        const closeModal = document.getElementById('close-modal');
+        const responseDiv = document.getElementById('response');
+        
+        // Easter Egg Activation - Method 1: Click the hidden spot
+        easterEggSpot.addEventListener('click', () => {
+            eggModal.classList.add('active');
+        });
+        
+        // Easter Egg Activation - Method 2: Click the response text 5 times
+        let clickCount = 0;
+        responseDiv.addEventListener('click', () => {
+            clickCount++;
+            if (clickCount >= 5) {
+                eggModal.classList.add('active');
+                clickCount = 0;
+            }
+        });
+        
+        // Close the Easter egg modal
+        closeModal.addEventListener('click', () => {
+            eggModal.classList.remove('active');
+        });
+        
+        // Also close when clicking outside the content
+        eggModal.addEventListener('click', (e) => {
+            if (e.target === eggModal) {
+                eggModal.classList.remove('active');
+            }
+        });
+        
     </script>
+    <!-- Add this right before the closing </body> tag -->
+<div class="egg-modal" id="egg-modal">
+    <div class="close-button" id="close-modal">×</div>
+    <div class="egg-content">
+        <h2>You found the Easter Egg!</h2>
+        <p>Congratulations on discovering this hidden feature! Enjoy one of Edo's rotating faves:</p>
+        <a href="https://www.youtube.com/watch?v=cQDaWPwfgm8" target="_blank" class="egg-button">Watch Video</a>
+    </div>
+</div>
 </body>
 </html>
